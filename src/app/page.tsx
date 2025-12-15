@@ -1,35 +1,31 @@
 "use client";
 
-type IpData = {
-  query: string;
-  country: string;
-  regionName: string;
-  city: string;
-  isp: string;
-};
+import { useEffect, useState } from "react";
+import { Dino } from "./types";
+import Link from "next/link";
 
-export async function getServerSideProps() {
-  const res = await fetch('http://ip-api.com/json');
-  const data: IpData = await res.json();
+export default function Home() {
+  const [dinosaurs, setDinosaurs] = useState<Dino[]>([]);
 
-  return {
-    props: {
-      ipData: data
-    }
-  };
-}
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(`/api/dinosaurs`);
+      const allDinosaurs = await response.json() as Dino[];
+      setDinosaurs(allDinosaurs);
+    })();
+  }, []);
 
-export default function Home({ ipData }: { ipData: IpData }) {
   return (
-    <main style={{ padding: 24, fontFamily: 'monospace' }}>
-      <h1>Hello from Deno Deploy 🌍</h1>
-
-      <h2>IP 信息（服务端请求）：</h2>
-      <pre>
-        {JSON.stringify(ipData, null, 2)}
-      </pre>
+    <main>
+      <h1>Welcome to the Dinosaur app</h1>
+      <p>Click on a dinosaur below to learn more.</p>
+      {dinosaurs.map((dinosaur: Dino) => {
+        return (
+          <Link key={dinosaur.name} className="btn-primary" href={`/${dinosaur.name.toLowerCase()}`}>
+            {dinosaur.name}
+          </Link>
+        );
+      })}
     </main>
   );
 }
-
-
