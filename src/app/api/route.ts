@@ -5,9 +5,10 @@ export async function GET() {
 
   const data = await res.json();
 
-  return Response.json({
-    region: Deno.env.get('DENO_REGION') ?? 'unknown',
-    ipApi: data
+  return new Response(JSON.stringify(data, null, 2), {
+    headers: {
+      'content-type': 'application/json'
+    }
   });
 }
 
